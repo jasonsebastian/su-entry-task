@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block posts %}
+  <div class="ui clearing segment">
+    <div class="ui header">
+      <div>{{ post.post_title }}</div>
+    </div>
+    <p>{{ post.post_content }}</p>
+    <div>
+      <div class="ui label">{{ post.timestamp }}</div>
+      {% include "post_buttons.html" %}
+    </div>
+  </div>
+{% endblock %}
+
+{% block comments %}
+  <div class="ui basic clearing segment">
+    <form class="ui form" method="post" action="{% url 'blogs:add_comment' post.post_id %}">
+      {% csrf_token %}
+      <div class="field">
+        <label>Comments</label>
+        {{ comment_form.comment_content }}
+      </div>
+      {% if request.user.is_authenticated %}
+        <button class="ui right floated button" type="submit">Submit</button>
+      {% else %}
+        <button class="ui right floated disabled button" type="submit">Submit</button>
+      {% endif %}
+    </form>
+  </div>
+  <div class="ui feed">
+    {% for comment in post.comment_set.all %}
+      <div class="event">
+        <div class="label">
+          {% load static %}
+          <img src="{% static 'blogs/oreo.jpg' %}">
+        </div>
+        <div class="content">
+          <div class="summary">
+            {{ comment.user.user.first_name }} {{ comment.user.user.last_name }}
+            <div class="date">
+              {{ comment.timestamp }}
+            </div>
+          </div>
+          <div class="extra text">
+            {{ comment.comment_content }}
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% endblock %}
+
+{% block user %}
+  {% include "user.html" %}
+{% endblock %}

@@ -1,0 +1,41 @@
+{% if not request.user.is_authenticated %}
+  <div class="ui disabled right floated labeled button" tabindex="0">
+    <div class="ui basic blue button">
+      <i class="comments icon"></i> Comment
+    </div>
+    <a class="ui basic left pointing blue label">
+      {{ post.comment_set.count }}
+    </a>
+  </div>
+  <div class="ui disabled right floated labeled button" tabindex="0">
+    <div class="ui basic red button">
+      <i class="heart icon"></i> Like
+    </div>
+    <a class="ui basic red left pointing label">
+      {{ post.bloguser_set.count }}
+    </a>
+  </div>
+{% else %}
+  <div class="ui right floated labeled button" tabindex="0">
+    <a class="ui basic blue button" href="{% url 'blogs:comment' post.post_id %}">
+      <i class="comments icon"></i> Comment
+    </a>
+    <a class="ui basic left pointing blue label">
+      {{ post.comment_set.count }}
+    </a>
+  </div>
+  <div class="ui right floated labeled button" tabindex="0">
+    {% if bu in post.bloguser_set.all %}
+      <a class="ui red button" href="{% url 'blogs:unlike' post.post_id %}?next={{ request.path }}">
+        <i class="heart icon"></i> Like
+      </a>
+    {% else %}
+      <a class="ui basic red button" href="{% url 'blogs:like' post.post_id %}?next={{ request.path }}">
+        <i class="heart icon"></i> Like
+      </a>
+    {% endif %}
+    <div class="ui basic red left pointing label">
+      {{ post.bloguser_set.count }}
+    </div>
+  </div>
+{% endif %}

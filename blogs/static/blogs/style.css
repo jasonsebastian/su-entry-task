@@ -1,0 +1,9 @@
+body > .ui.container {
+  margin-top: 3em;
+}
+
+.ui.container > h1 {
+  font-size: 3em;
+  text-align: center;
+  font-weight: normal;
+}
