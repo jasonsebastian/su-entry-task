@@ -7,16 +7,13 @@ from .models import BlogUser, Comment, Post
 
 
 def index(request):
+    context = {'posts': Post.objects.all()}
     if request.user.is_authenticated:
-        return render(request, 'blogs/index.html', {
-            'bu': get_object_or_404(BlogUser, user=request.user),
-            'posts': Post.objects.all(),
-        })
+        context['bu'] = get_object_or_404(BlogUser, user=request.user)
+    else:
+        context['user_form'] = BlogUserForm()
 
-    return render(request, 'blogs/index.html', {
-        'user_form': BlogUserForm(),
-        'posts': Post.objects.all()
-    })
+    return render(request, 'blogs/index.html', context)
 
 
 def bu_login(request):
@@ -54,20 +51,17 @@ def unlike(request, post_id):
 
 
 def comment(request, post_id):
-    post = get_object_or_404(Post, post_id=post_id)
+    context = {
+        'comment_form': CommentForm(),
+        'post': get_object_or_404(Post, post_id=post_id),
+    }
 
     if request.user.is_authenticated:
-        return render(request, 'blogs/comments.html', {
-            'bu': get_object_or_404(BlogUser, user=request.user),
-            'comment_form': CommentForm(),
-            'post': post,
-        })
+        context['bu'] = get_object_or_404(BlogUser, user=request.user)
+    else:
+        context['user_form'] = BlogUserForm()
 
-    return render(request, 'blogs/comments.html', {
-        'user_form': BlogUserForm(),
-        'comment_form': CommentForm(),
-        'post': post,
-    })
+    return render(request, 'blogs/comments.html', context)
 
 
 def add_comment(request, post_id):
@@ -78,4 +72,3 @@ def add_comment(request, post_id):
         c = Comment(user=user, post=post, comment_content=comment_content)
         c.save()
         return HttpResponseRedirect('/blogs/')
-
