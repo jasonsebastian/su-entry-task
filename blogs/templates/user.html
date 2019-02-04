@@ -1,5 +1,5 @@
 {% if not request.user.is_authenticated %}
-  <form class="ui form" action="{% url 'blogs:login' %}?next={{ request.path }}" method="post">
+  <form class="ui form" action="{% url 'blogs:login' %}" method="post">
     {% csrf_token %}
     <div class="field">
       <label>Username</label>
@@ -20,5 +20,5 @@
       <div class="sub header">{{ bu.matric_no }}</div>
     </div>
   </h2>
-  <a class="ui right floated button" href="{% url 'blogs:logout' %}?next={{ request.path }}">Logout</a>
+  <a class="ui right floated button" href="{% url 'blogs:logout' %}">Logout</a>
 {% endif %}

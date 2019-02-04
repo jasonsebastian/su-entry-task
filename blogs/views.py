@@ -1,5 +1,6 @@
 from django.contrib.auth import authenticate, login, logout
-from django.http import HttpResponseRedirect
+from django.db.models import Q
+from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import get_object_or_404, render
 
 from .forms import BlogUserForm, CommentForm
@@ -24,12 +25,13 @@ def bu_login(request):
 
         if user is not None:
             login(request, user)
-            return HttpResponseRedirect(request.GET.get('next', '/'))
+
+    return HttpResponseRedirect('/blogs/')
 
 
 def bu_logout(request):
     logout(request)
-    return HttpResponseRedirect(request.GET.get('next', '/'))
+    return HttpResponseRedirect('/blogs/')
 
 
 def like(request, post_id):
@@ -72,3 +74,22 @@ def add_comment(request, post_id):
         c = Comment(user=user, post=post, comment_content=comment_content)
         c.save()
         return HttpResponseRedirect('/blogs/')
+
+
+def search(request):
+    query = request.GET.get("q")
+    print(type(query))
+    context = dict()
+
+    try:
+        results = Post.objects.filter(Q(post_title__icontains=query) | Q(post_content__icontains=query)).values()
+        context['results'] = results
+    except Post.DoesNotExist:
+        context['results'] = None
+
+    if request.user.is_authenticated:
+        context['bu'] = get_object_or_404(BlogUser, user=request.user)
+    else:
+        context['user_form'] = BlogUserForm()
+
+    return render(request, 'blogs/search.html', context)

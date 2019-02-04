@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block posts %}
+  {% if request.GET.q %}
+    <h4 class="ui header">Search results for {{ request.GET.q }}:</h4>
+  {% endif %}
+  {% if results %}
+    {% for post in results %}
+      <div class="ui clearing segment">
+        <div class="ui header">{{ post.post_title }}</div>
+        <p>{{ post.post_content }}</p>
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endblock %}
+
+{% block user %}
+  {% include "user.html" %}
+{% endblock %}

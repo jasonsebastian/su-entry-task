@@ -16,13 +16,12 @@
     </div>
     <div class="row">
       <div class="right aligned column">
-        <div class="ui search">
+        <form class="ui search" method="get" action="{% url 'blogs:search' %}">
           <div class="ui icon input">
-            <input class="prompt" type="text" placeholder="Search...">
+            <input class="prompt" name="q" type="text" placeholder="Search...">
             <i class="search icon"></i>
           </div>
-          <div class="results"></div>
-        </div>
+        </form>
       </div>
     </div>
     <div class="row">
