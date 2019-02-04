@@ -1,6 +1,7 @@
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.db.models import Q
-from django.http import HttpResponseRedirect, Http404
+from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 
 from .forms import BlogUserForm, CommentForm
@@ -93,3 +94,16 @@ def search(request):
         context['user_form'] = BlogUserForm()
 
     return render(request, 'blogs/search.html', context)
+
+
+@login_required
+def admin(request):
+    pass
+
+
+def admin_login(request):
+    if request.user.is_authenticated:
+        return HttpResponseRedirect('/blogs/admin')
+
+    return render(request, 'blogs/admin_login.html')
+

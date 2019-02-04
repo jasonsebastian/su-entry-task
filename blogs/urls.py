@@ -5,6 +5,8 @@ from . import views
 app_name = 'blogs'
 urlpatterns = [
     path('', views.index, name='index'),
+    path('admin/', views.admin, name='admin'),
+    path('admin/login/', views.admin_login, name='admin_login'),
     path('login/', views.bu_login, name='login'),
     path('logout/', views.bu_logout, name='logout'),
     path('like/<int:post_id>/', views.like, name='like'),

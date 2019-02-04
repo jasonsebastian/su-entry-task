@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Admin Login</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
+  {% load static %}
+  <link rel="stylesheet" href="{% static "blogs/admin.css" %}">
+  <script src="{% static "blogs/jquery-3.3.1.min.js" %}"></script>
+  <script src="{% static "blogs/semantic.min.js" %}"></script>
+</head>
+<body>
+<div class="ui middle aligned center aligned grid">
+  <div class="column">
+    <h2 class="ui header">Blog administration</h2>
+    <form class="ui large form">
+      <div class="ui stacked segment">
+        <div class="field">
+          <div class="ui left icon input">
+            <i class="user icon"></i>
+            <input type="text" name="username" placeholder="Username">
+          </div>
+        </div>
+        <div class="field">
+          <div class="ui left icon input">
+            <i class="lock icon"></i>
+            <input type="password" name="password" placeholder="Password">
+          </div>
+        </div>
+        <div class="ui fluid large submit button">Login</div>
+      </div>
+    </form>
+  </div>
+</div>
+</body>
+</html>
