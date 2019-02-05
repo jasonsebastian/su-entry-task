@@ -13,26 +13,22 @@
 </head>
 <body>
 <div class="ui grid container">
-  <a class="ui huge header" href="{% url 'blogs:admin' %}">Admin page</a>
-  <div class="row">
-    <div class="four wide column">
-      <div class="ui segments">
-        {% block nav %}
+  {#  <a class="ui huge header" href="{% url 'blogs:admin' %}">Admin page</a>#}
+  <div class="four wide column">
+    {% block nav %}
+    {% endblock %}
+  </div>
+  <div class="twelve wide column">
+    <div class="row">
+      <div class="ui basic clearing segment">
+        {% block button %}
         {% endblock %}
       </div>
     </div>
-    <div class="twelve wide column">
-      <div class="row">
-        <div class="right aligned column">
-          {% block button %}
-          {% endblock %}
-        </div>
-      </div>
-      <div class="row">
-        <div class="ui segment">
-          {% block user %}
-          {% endblock %}
-        </div>
+    <div class="row">
+      <div class="ui segment">
+        {% block table %}
+        {% endblock %}
       </div>
     </div>
   </div>

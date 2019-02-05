@@ -1,5 +1,6 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from django.db.models import Q
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
@@ -120,7 +121,12 @@ def admin_login(request):
 
 @login_required
 def admin_posts(request):
-    return render(request, 'blogs/admin_posts.html')
+    post_list = Post.objects.all()
+    paginator = Paginator(post_list, 5)
+    
+    page = request.GET.get('page')
+    posts = paginator.get_page(page)
+    return render(request, 'blogs/admin_posts.html', {'posts': posts})
 
 
 @login_required
