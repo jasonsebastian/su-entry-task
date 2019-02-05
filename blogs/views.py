@@ -123,12 +123,18 @@ def admin_login(request):
 def admin_posts(request):
     post_list = Post.objects.all()
     paginator = Paginator(post_list, 5)
-    
+
     page = request.GET.get('page')
     posts = paginator.get_page(page)
     return render(request, 'blogs/admin_posts.html', {'posts': posts})
 
 
 @login_required
+def admin_post_detail(request, post_id):
+    post = get_object_or_404(Post, pk=post_id)
+    return render(request, 'blogs/admin_post_detail.html', {'post': post})
+
+
+@login_required
 def admin_user(request):
-    return render(request, 'blogs/admin_user.html')
+    pass

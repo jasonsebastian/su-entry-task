@@ -1,0 +1,32 @@
+{% extends 'base_admin_posts.html' %}
+
+{% block content %}
+  <div class="row">
+    <div class="ui segment">
+      <h4 class="ui header">{{ post.post_title }}</h4>
+      <p>{{ post.post_content }}</p>
+    </div>
+  </div>
+
+  {% for comment in post.comment_set.all %}
+    <div class="ui feed">
+      <div class="event">
+        <div class="label">
+          {% load static %}
+          <img src="{% static 'blogs/oreo.jpg' %}" alt="Avatar">
+        </div>
+        <div class="content">
+          <div class="summary">
+            {{ comment.user.user.first_name }} {{ comment.user.user.last_name }}
+            <div class="date">
+              {{ comment.timestamp }}
+            </div>
+          </div>
+          <div class="extra text">
+            {{ comment.comment_content }}
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+{% endblock %}

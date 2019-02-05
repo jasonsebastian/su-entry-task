@@ -1,0 +1,8 @@
+{% extends 'base_admin.html' %}
+
+{% block nav %}
+  <div class="ui secondary vertical menu">
+    <a class="active item">Posts</a>
+    <a class="item" href="{% url 'blogs:admin_user' %}">User</a>
+  </div>
+{% endblock %}
