@@ -1,0 +1,10 @@
+{% extends 'base_admin.html' %}
+
+{% block nav %}
+  <div class="ui segment">
+    <a class="ui small header"><u>Posts</u></a>
+  </div>
+  <div class="ui segment">
+    <a class="ui small header" href="{% url 'blogs:admin_user' %}">User</a>
+  </div>
+{% endblock %}

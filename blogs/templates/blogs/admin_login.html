@@ -12,7 +12,8 @@
 <div class="ui middle aligned center aligned grid">
   <div class="column">
     <h2 class="ui header">Blog administration</h2>
-    <form class="ui large form">
+    <form class="ui large form" method="post" action="{% url 'blogs:admin_login' %}">
+      {% csrf_token %}
       <div class="ui stacked segment">
         <div class="field">
           <div class="ui left icon input">
@@ -26,7 +27,7 @@
             <input type="password" name="password" placeholder="Password">
           </div>
         </div>
-        <div class="ui fluid large submit button">Login</div>
+        <button class="ui fluid large submit button" type="submit">Login</button>
       </div>
     </form>
   </div>

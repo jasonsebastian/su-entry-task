@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  {% block head %}
+    <title>My Cool Blog - Admin</title>
+  {% endblock %}
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
+  {% load static %}
+  <link rel="stylesheet" href="{% static "blogs/user.css" %}">
+  <script src="{% static "blogs/jquery-3.3.1.min.js" %}"></script>
+  <script src="{% static "blogs/semantic.min.js" %}"></script>
+</head>
+<body>
+<div class="ui grid container">
+  <a class="ui huge header" href="{% url 'blogs:admin' %}">Admin page</a>
+  <div class="row">
+    <div class="four wide column">
+      <div class="ui segments">
+        {% block nav %}
+        {% endblock %}
+      </div>
+    </div>
+    <div class="twelve wide column">
+      <div class="row">
+        <div class="right aligned column">
+          {% block button %}
+          {% endblock %}
+        </div>
+      </div>
+      <div class="row">
+        <div class="ui segment">
+          {% block user %}
+          {% endblock %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

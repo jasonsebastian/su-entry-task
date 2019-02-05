@@ -98,12 +98,31 @@ def search(request):
 
 @login_required
 def admin(request):
-    pass
+    return HttpResponseRedirect('/blogs/admin/posts')
 
 
 def admin_login(request):
     if request.user.is_authenticated:
         return HttpResponseRedirect('/blogs/admin')
 
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(username=username, password=password)
+
+        if user is not None and user.is_staff:
+            login(request, user)
+
+        return HttpResponseRedirect('/blogs/admin/')
+
     return render(request, 'blogs/admin_login.html')
 
+
+@login_required
+def admin_posts(request):
+    return render(request, 'blogs/admin_posts.html')
+
+
+@login_required
+def admin_user(request):
+    return render(request, 'blogs/admin_user.html')
