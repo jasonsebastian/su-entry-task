@@ -14,6 +14,7 @@ urlpatterns = [
     path('admin/comment/show/<int:comment_id>/', views.hide_comment, name='hide_comment'),
     path('admin/comment/hide/<int:comment_id>/', views.show_comment, name='show_comment'),
     path('admin/user/', views.admin_user, name='admin_user'),
+    path('admin/user/<str:username>', views.admin_user_detail, name='admin_user_detail'),
     path('admin/login/', views.admin_login, name='admin_login'),
     path('login/', views.bu_login, name='login'),
     path('logout/', views.bu_logout, name='logout'),

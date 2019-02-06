@@ -2,7 +2,9 @@
 
 ## Description
 This project is a mini blog. Users who have registered on the blog can like and comment posts,
-while admins can create, edit, delete posts; as well as register users to the blog. 
+while admins can create, edit, delete posts; as well as register users to the blog.
+
+This project is built on Django.
 
 ## Things to do
 
@@ -16,4 +18,5 @@ while admins can create, edit, delete posts; as well as register users to the bl
 
 ### Admin page
 - Dismissable success action message
-- Modal 'yes/no' for delete post
+- Modal 'yes/no' for post deletion
+- Success action message for post deletion

@@ -155,7 +155,10 @@ def hide_comment(request, comment_id):
         c.is_hidden = True
         c.save()
 
-    return HttpResponseRedirect(reverse('blogs:admin_post_detail', args=[c.post.post_id]))
+    if 'blogs/admin/post/' in request.META['HTTP_REFERER']:
+        return HttpResponseRedirect(reverse('blogs:admin_post_detail', args=[c.post.post_id]))
+    elif 'blogs/admin/user/' in request.META['HTTP_REFERER']:
+        return HttpResponseRedirect(reverse('blogs:admin_user_detail', args=[c.user.user.username]))
 
 
 @staff_member_required(login_url='blogs:admin_login')
@@ -165,6 +168,11 @@ def show_comment(request, comment_id):
     if c.is_hidden:
         c.is_hidden = False
         c.save()
+
+    if 'blogs/admin/post/' in request.META['HTTP_REFERER']:
+        return HttpResponseRedirect(reverse('blogs:admin_post_detail', args=[c.post.post_id]))
+    elif 'blogs/admin/user/' in request.META['HTTP_REFERER']:
+        return HttpResponseRedirect(reverse('blogs:admin_user_detail', args=[c.user.user.username]))
 
     return HttpResponseRedirect(reverse('blogs:admin_post_detail', args=[c.post.post_id]))
 
@@ -199,7 +207,6 @@ def edit_post(request, post_id):
 
 @staff_member_required(login_url='blogs:admin_login')
 def delete_post(request, post_id):
-    print('test')
     if request.method == 'POST':
         get_object_or_404(Post, pk=post_id).delete()
 
@@ -221,3 +228,10 @@ def admin_user(request):
     page = request.GET.get('page')
     context['users'] = paginator.get_page(page)
     return render(request, 'blogs/admin_user.html', context)
+
+
+@staff_member_required(login_url='blogs:admin_login')
+def admin_user_detail(request, username):
+    return render(request, 'blogs/admin_user_detail.html', {
+        'bu': get_object_or_404(BlogUser, user__username=username)
+    })

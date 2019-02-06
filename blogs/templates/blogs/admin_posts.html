@@ -7,7 +7,11 @@
       {% if message_class %}
         <div class="ui {{ message_class }} compact message">
           <div class="header">Action made</div>
-          <p>Post edited successfully.</p>
+          {% if message_class == 'positive' %}
+            <p>Post edited successfully.</p>
+          {% else %}
+            <p>Post deleted successfully.</p>
+          {% endif %}
         </div>
       {% endif %}
     </div>

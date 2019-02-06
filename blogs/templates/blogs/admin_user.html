@@ -4,12 +4,6 @@
   <div class="row">
     <div class="ui basic clearing segment">
       <a class="ui right floated primary button">Create</a>
-      {% if message_class %}
-        <div class="ui {{ message_class }} compact message">
-          <div class="header">Action made</div>
-          <p>Post edited successfully.</p>
-        </div>
-      {% endif %}
     </div>
   </div>
   <div class="row">
@@ -26,7 +20,7 @@
         {% for bu in users %}
           <tr>
             <td data-label="Name">
-              <a>
+              <a href="{% url 'blogs:admin_user_detail' bu.user.username %}">
                 {{ bu.user.first_name }} {{ bu.user.last_name }}
               </a>
             </td>
