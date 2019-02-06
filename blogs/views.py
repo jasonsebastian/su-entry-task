@@ -1,5 +1,5 @@
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.http import HttpResponseRedirect
@@ -102,13 +102,13 @@ def search(request):
     return render(request, 'blogs/search.html', context)
 
 
-@login_required
+@staff_member_required(login_url='blogs:admin_login')
 def admin(request):
     return HttpResponseRedirect('/blogs/admin/posts')
 
 
 def admin_login(request):
-    if request.user.is_authenticated:
+    if request.user.is_authenticated and request.user.is_staff:
         return HttpResponseRedirect('/blogs/admin')
 
     if request.method == 'POST':
@@ -124,7 +124,7 @@ def admin_login(request):
     return render(request, 'blogs/admin_login.html')
 
 
-@login_required
+@staff_member_required(login_url='blogs:admin_login')
 def admin_posts(request):
     post_list = Post.objects.all()
     paginator = Paginator(post_list, 5)
@@ -141,13 +141,13 @@ def admin_posts(request):
     return render(request, 'blogs/admin_posts.html', context)
 
 
-@login_required
+@staff_member_required(login_url='blogs:admin_login')
 def admin_post_detail(request, post_id):
     post = get_object_or_404(Post, pk=post_id)
     return render(request, 'blogs/admin_post_detail.html', {'post': post})
 
 
-@login_required
+@staff_member_required(login_url='blogs:admin_login')
 def hide_comment(request, comment_id):
     c = get_object_or_404(Comment, pk=comment_id)
 
@@ -158,7 +158,7 @@ def hide_comment(request, comment_id):
     return HttpResponseRedirect(reverse('blogs:admin_post_detail', args=[c.post.post_id]))
 
 
-@login_required
+@staff_member_required(login_url='blogs:admin_login')
 def show_comment(request, comment_id):
     c = get_object_or_404(Comment, pk=comment_id)
 
@@ -169,7 +169,7 @@ def show_comment(request, comment_id):
     return HttpResponseRedirect(reverse('blogs:admin_post_detail', args=[c.post.post_id]))
 
 
-@login_required
+@staff_member_required(login_url='blogs:admin_login')
 def create_post(request):
     if request.method == 'POST':
         post_title = request.POST['post_title']
@@ -183,7 +183,7 @@ def create_post(request):
     })
 
 
-@login_required
+@staff_member_required(login_url='blogs:admin_login')
 def edit_post(request, post_id):
     if request.method == 'POST':
         p = get_object_or_404(Post, pk=post_id)
@@ -197,6 +197,15 @@ def edit_post(request, post_id):
     })
 
 
-@login_required
+@staff_member_required(login_url='blogs:admin_login')
+def delete_post(request, post_id):
+    print('test')
+    if request.method == 'POST':
+        get_object_or_404(Post, pk=post_id).delete()
+
+    return HttpResponseRedirect('/blogs/admin/posts')
+
+
+@staff_member_required(login_url='blogs:admin_login')
 def admin_user(request):
     pass
