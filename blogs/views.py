@@ -6,7 +6,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 
-from .forms import BlogUserForm, CommentForm, CreatePostForm
+from .forms import BlogUserForm, CommentForm, CreateEditPostForm
 from .models import BlogUser, Comment, Post
 
 
@@ -129,20 +129,22 @@ def admin_posts(request):
     post_list = Post.objects.all()
     paginator = Paginator(post_list, 5)
 
+    context = {}
+    if 'HTTP_REFERER' in request.META.keys():
+        if 'blogs/admin/post/edit' in request.META['HTTP_REFERER']:
+            context['message_class'] = 'positive'
+        elif 'blogs/admin/post/delete' in request.META['HTTP_REFERER']:
+            context['message_class'] = 'negative'
+
     page = request.GET.get('page')
-    posts = paginator.get_page(page)
-    return render(request, 'blogs/admin_posts.html', {'posts': posts})
+    context['posts'] = paginator.get_page(page)
+    return render(request, 'blogs/admin_posts.html', context)
 
 
 @login_required
 def admin_post_detail(request, post_id):
     post = get_object_or_404(Post, pk=post_id)
     return render(request, 'blogs/admin_post_detail.html', {'post': post})
-
-
-@login_required
-def admin_user(request):
-    pass
 
 
 @login_required
@@ -169,13 +171,32 @@ def show_comment(request, comment_id):
 
 @login_required
 def create_post(request):
-    if request.method == 'GET':
-        context = {'create_post_form': CreatePostForm()}
-        return render(request, 'blogs/admin_create_post.html', context)
-
-    else:
+    if request.method == 'POST':
         post_title = request.POST['post_title']
         post_content = request.POST['post_content']
         p = Post(post_title=post_title, post_content=post_content)
         p.save()
         return HttpResponseRedirect('/blogs/admin/posts/')
+
+    return render(request, 'blogs/admin_create_post.html', {
+        'create_post_form': CreateEditPostForm()
+    })
+
+
+@login_required
+def edit_post(request, post_id):
+    if request.method == 'POST':
+        p = get_object_or_404(Post, pk=post_id)
+        p.post_title = request.POST['post_title']
+        p.post_content = request.POST['post_content']
+        p.save()
+        return HttpResponseRedirect('/blogs/admin/posts')
+
+    return render(request, 'blogs/admin_edit_post.html', {
+        'edit_post_form': CreateEditPostForm()
+    })
+
+
+@login_required
+def admin_user(request):
+    pass

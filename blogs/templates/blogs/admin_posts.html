@@ -4,6 +4,12 @@
   <div class="row">
     <div class="ui basic clearing segment">
       <a class="ui right floated primary button" href="{% url 'blogs:create_post' %}">Create</a>
+      {% if message_class %}
+        <div class="ui {{ message_class }} compact message">
+          <div class="header">Action made</div>
+          <p>Post edited successfully.</p>
+        </div>
+      {% endif %}
     </div>
   </div>
   <div class="row">
@@ -32,7 +38,14 @@
               {{ post.timestamp }}
             </td>
             <td data-label="Action">
-              Edit Delete
+              <div class="ui icon buttons">
+                <a class="ui button" title="Edit" href="{% url 'blogs:edit_post' post.post_id %}">
+                  <i class="edit icon"></i>
+                </a>
+                <a class="ui button" title="Delete">
+                  <i class="trash icon"></i>
+                </a>
+              </div>
             </td>
           </tr>
         {% endfor %}

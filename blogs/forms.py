@@ -13,7 +13,7 @@ class CommentForm(forms.Form):
     }))
 
 
-class CreatePostForm(forms.Form):
+class CreateEditPostForm(forms.Form):
     post_title = forms.CharField(max_length=20)
     post_content = forms.CharField(widget=forms.Textarea(attrs={
         'rows': 5

@@ -1,0 +1,19 @@
+{% extends 'base_admin_posts.html' %}
+
+{% block content %}
+  <div class="ui segment">
+    <h2 class="ui center aligned header">Edit Post</h2>
+    <form class="ui form" method="post" action="">
+      {% csrf_token %}
+      <div class="field">
+        <label>Post Title</label>
+        {{ edit_post_form.post_title }}
+      </div>
+      <div class="field">
+        <label>Post Content</label>
+        {{ edit_post_form.post_content }}
+      </div>
+      <button class="ui right floated button" type="submit">Submit</button>
+    </form>
+  </div>
+{% endblock %}
