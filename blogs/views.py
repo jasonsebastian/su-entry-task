@@ -6,7 +6,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 
-from .forms import BlogUserForm, CommentForm
+from .forms import BlogUserForm, CommentForm, CreatePostForm
 from .models import BlogUser, Comment, Post
 
 
@@ -165,3 +165,17 @@ def show_comment(request, comment_id):
         c.save()
 
     return HttpResponseRedirect(reverse('blogs:admin_post_detail', args=[c.post.post_id]))
+
+
+@login_required
+def create_post(request):
+    if request.method == 'GET':
+        context = {'create_post_form': CreatePostForm()}
+        return render(request, 'blogs/admin_create_post.html', context)
+
+    else:
+        post_title = request.POST['post_title']
+        post_content = request.POST['post_content']
+        p = Post(post_title=post_title, post_content=post_content)
+        p.save()
+        return HttpResponseRedirect('/blogs/admin/posts/')

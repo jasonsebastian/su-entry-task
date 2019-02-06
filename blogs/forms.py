@@ -11,3 +11,10 @@ class CommentForm(forms.Form):
         'placeholder': 'Input comment...',
         'rows': 3
     }))
+
+
+class CreatePostForm(forms.Form):
+    post_title = forms.CharField(max_length=20)
+    post_content = forms.CharField(widget=forms.Textarea(attrs={
+        'rows': 5
+    }))
