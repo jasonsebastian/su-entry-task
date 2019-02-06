@@ -1,7 +1,7 @@
 # NTU Student Union IT Entry Task
 
 ## Description
-This project is a mini blog. Users who have registered on the blog can like and comment posts,
+This project is a blog site. Users who have registered on the blog can like and comment posts,
 while admins can create, edit, delete posts; as well as register users to the blog.
 
 This project is built on Django.
