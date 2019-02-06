@@ -208,4 +208,16 @@ def delete_post(request, post_id):
 
 @staff_member_required(login_url='blogs:admin_login')
 def admin_user(request):
-    pass
+    user_list = BlogUser.objects.all()
+    paginator = Paginator(user_list, 5)
+
+    context = {}
+    # if 'HTTP_REFERER' in request.META.keys():
+    #     if 'blogs/admin/post/edit' in request.META['HTTP_REFERER']:
+    #         context['message_class'] = 'positive'
+    #     elif 'blogs/admin/post/delete' in request.META['HTTP_REFERER']:
+    #         context['message_class'] = 'negative'
+
+    page = request.GET.get('page')
+    context['users'] = paginator.get_page(page)
+    return render(request, 'blogs/admin_user.html', context)
