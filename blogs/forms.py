@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import BlogUser, Post
+from .models import Post
 
 
 class BlogUserLoginForm(forms.Form):
