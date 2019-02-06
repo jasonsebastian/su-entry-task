@@ -4,6 +4,7 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
+from django.urls import reverse
 
 from .forms import BlogUserForm, CommentForm
 from .models import BlogUser, Comment, Post
@@ -55,9 +56,13 @@ def unlike(request, post_id):
 
 
 def comment(request, post_id):
+    post = get_object_or_404(Post, post_id=post_id)
+    comments = post.comment_set.all().filter(is_hidden=False)
+
     context = {
         'comment_form': CommentForm(),
-        'post': get_object_or_404(Post, post_id=post_id),
+        'post': post,
+        'comments': comments
     }
 
     if request.user.is_authenticated:
@@ -138,3 +143,25 @@ def admin_post_detail(request, post_id):
 @login_required
 def admin_user(request):
     pass
+
+
+@login_required
+def hide_comment(request, comment_id):
+    c = get_object_or_404(Comment, pk=comment_id)
+
+    if not c.is_hidden:
+        c.is_hidden = True
+        c.save()
+
+    return HttpResponseRedirect(reverse('blogs:admin_post_detail', args=[c.post.post_id]))
+
+
+@login_required
+def show_comment(request, comment_id):
+    c = get_object_or_404(Comment, pk=comment_id)
+
+    if c.is_hidden:
+        c.is_hidden = False
+        c.save()
+
+    return HttpResponseRedirect(reverse('blogs:admin_post_detail', args=[c.post.post_id]))

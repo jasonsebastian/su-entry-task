@@ -8,7 +8,7 @@
     <p>{{ post.post_content }}</p>
     <div>
       <div class="ui label">{{ post.timestamp }}</div>
-      {% include "post_buttons.html" %}
+      {% include "post_buttons.html" with comment_count=comments.count %}
     </div>
   </div>
 {% endblock %}
@@ -29,7 +29,7 @@
     </form>
   </div>
   <div class="ui feed">
-    {% for comment in post.comment_set.all %}
+    {% for comment in comments %}
       <div class="event">
         <div class="label">
           {% load static %}

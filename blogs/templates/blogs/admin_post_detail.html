@@ -8,25 +8,41 @@
     </div>
   </div>
 
-  {% for comment in post.comment_set.all %}
-    <div class="ui feed">
-      <div class="event">
-        <div class="label">
-          {% load static %}
-          <img src="{% static 'blogs/oreo.jpg' %}" alt="Avatar">
-        </div>
-        <div class="content">
-          <div class="summary">
-            {{ comment.user.user.first_name }} {{ comment.user.user.last_name }}
-            <div class="date">
-              {{ comment.timestamp }}
+  <div class="ui basic segment">
+    <div class="ui grid container">
+      {% for comment in post.comment_set.all %}
+        <div class="fourteen wide column">
+          <div class="ui feed">
+            <div class="event">
+              <div class="label">
+                {% load static %}
+                <img src="{% static 'blogs/oreo.jpg' %}" alt="Avatar">
+              </div>
+              <div class="content">
+                <div class="summary">
+                  {{ comment.user.user.first_name }} {{ comment.user.user.last_name }}
+                  <div class="date">
+                    {{ comment.timestamp }}
+                  </div>
+                  {% if comment.is_hidden %}
+                    <div class="ui red horizontal label">Hidden</div>
+                  {% endif %}
+                </div>
+                <div class="extra text">
+                  {{ comment.comment_content }}
+                </div>
+              </div>
             </div>
           </div>
-          <div class="extra text">
-            {{ comment.comment_content }}
-          </div>
         </div>
-      </div>
+        <div class="two wide column">
+          {% if comment.is_hidden %}
+            <a class="ui primary button" href="{% url 'blogs:show_comment' comment.comment_id %}">Show</a>
+          {% else %}
+            <a class="ui primary button" href="{% url 'blogs:hide_comment' comment.comment_id %}">Hide</a>
+          {% endif %}
+        </div>
+      {% endfor %}
     </div>
-  {% endfor %}
+  </div>
 {% endblock %}

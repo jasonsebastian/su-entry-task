@@ -33,6 +33,7 @@ class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
     comment_content = models.CharField(max_length=250)
     timestamp = models.DateTimeField(auto_now_add=True)
+    is_hidden = models.BooleanField(default=False)
 
     def __str__(self):
         return str(self.comment_id)
