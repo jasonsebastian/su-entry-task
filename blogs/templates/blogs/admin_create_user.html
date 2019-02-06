@@ -1,0 +1,38 @@
+{% extends 'base_admin_user.html' %}
+
+{% block content %}
+  <div class="ui segment">
+    <h2 class="ui center aligned header">New User</h2>
+    <form class="ui form" method="post" action="{% url 'blogs:create_user' %}">
+      {% csrf_token %}
+      <div class="field">
+        <label>Name</label>
+        <div class="two fields">
+          <div class="field">
+            {{ create_user_form.first_name }}
+          </div>
+          <div class="field">
+            {{ create_user_form.last_name }}
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Username</label>
+        {{ create_user_form.username }}
+      </div>
+      <div class="field">
+        <label>Password</label>
+        {{ create_user_form.password }}
+      </div>
+      <div class="field">
+        <label>Password Confirmation</label>
+        {{ create_user_form.password_confirmation }}
+      </div>
+      <div class="field">
+        <label>Matriculation Number</label>
+        {{ create_user_form.matric_no }}
+      </div>
+      <button class="ui right floated button" type="submit">Submit</button>
+    </form>
+  </div>
+{% endblock %}

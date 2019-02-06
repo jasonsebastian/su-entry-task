@@ -1,12 +1,13 @@
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 
-from .forms import BlogUserForm, CommentForm, CreateEditPostForm
+from .forms import BlogUserLoginForm, CommentForm, CreateEditPostForm, BlogUserCreationForm
 from .models import BlogUser, Comment, Post
 
 
@@ -15,7 +16,7 @@ def index(request):
     if request.user.is_authenticated:
         context['bu'] = get_object_or_404(BlogUser, user=request.user)
     else:
-        context['user_form'] = BlogUserForm()
+        context['user_form'] = BlogUserLoginForm()
 
     return render(request, 'blogs/index.html', context)
 
@@ -68,7 +69,7 @@ def comment(request, post_id):
     if request.user.is_authenticated:
         context['bu'] = get_object_or_404(BlogUser, user=request.user)
     else:
-        context['user_form'] = BlogUserForm()
+        context['user_form'] = BlogUserLoginForm()
 
     return render(request, 'blogs/comments.html', context)
 
@@ -97,7 +98,7 @@ def search(request):
     if request.user.is_authenticated:
         context['bu'] = get_object_or_404(BlogUser, user=request.user)
     else:
-        context['user_form'] = BlogUserForm()
+        context['user_form'] = BlogUserLoginForm()
 
     return render(request, 'blogs/search.html', context)
 
@@ -219,11 +220,8 @@ def admin_user(request):
     paginator = Paginator(user_list, 5)
 
     context = {}
-    # if 'HTTP_REFERER' in request.META.keys():
-    #     if 'blogs/admin/post/edit' in request.META['HTTP_REFERER']:
-    #         context['message_class'] = 'positive'
-    #     elif 'blogs/admin/post/delete' in request.META['HTTP_REFERER']:
-    #         context['message_class'] = 'negative'
+    if 'HTTP_REFERER' in request.META.keys() and 'blogs/admin/user/create' in request.META['HTTP_REFERER']:
+        context['message_class'] = 'positive'
 
     page = request.GET.get('page')
     context['users'] = paginator.get_page(page)
@@ -234,4 +232,24 @@ def admin_user(request):
 def admin_user_detail(request, username):
     return render(request, 'blogs/admin_user_detail.html', {
         'bu': get_object_or_404(BlogUser, user__username=username)
+    })
+
+
+@staff_member_required(login_url='blogs:admin_login')
+def create_user(request):
+    if request.method == 'POST' and request.POST['password'] == request.POST['password_confirmation']:
+        user = User.objects.create_user(
+            request.POST['username'],
+            password=request.POST['password'],
+            first_name=request.POST['first_name'],
+            last_name=request.POST['last_name'],
+        )
+        user.save()
+
+        bu = BlogUser(user=user, matric_no=request.POST['matric_no'])
+        bu.save()
+        return HttpResponseRedirect('/blogs/admin/user/')
+
+    return render(request, 'blogs/admin_create_user.html', {
+        'create_user_form': BlogUserCreationForm()
     })
