@@ -3,7 +3,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db.models import Count, Q
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
@@ -13,7 +13,12 @@ from .models import BlogUser, Comment, Post
 
 
 def index(request):
-    context = {'posts': Post.objects.all()}
+    context = {
+        'posts': Post.objects.annotate(
+            visible_comments=Count('comment', filter=Q(comment__is_hidden=False))
+        )
+    }
+
     if request.user.is_authenticated:
         context['bu'] = get_object_or_404(BlogUser, user=request.user)
     else:
@@ -70,7 +75,7 @@ def post_detail(request, post_id):
     context = {
         'comment_form': CommentForm(),
         'post': post,
-        'comments': comments
+        'visible_comments': comments
     }
 
     if request.user.is_authenticated:

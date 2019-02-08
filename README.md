@@ -12,14 +12,10 @@ Clone this repository, and type `python manage.py runserver` on your terminal. Y
 ## Things to do
 
 ### User page
-- Maintain on the same page after commenting on a post or login/logout
 - Enable view comments without logging in
-- Count only unhidden comments on index page
-- `@login_required` for user page 
 - No refresh after a like on a post
+- Maintain on the same page after commenting on a post or login/logout
 - Customize avatar for each user
 
 ### Admin page
-- Dismissable success action message
 - Modal 'yes/no' for post deletion
-- Success action message for post deletion

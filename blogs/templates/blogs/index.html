@@ -8,7 +8,7 @@
       <div class="ui header">{{ post.post_title }}</div>
       <p>{{ post.post_content }}</p>
       <div>
-        {% include "post_buttons.html" with comment_count=post.comment_set.count %}
+        {% include "post_buttons.html" with comment_count=post.visible_comments %}
       </div>
     </div>
   {% endfor %}
