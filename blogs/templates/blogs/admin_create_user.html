@@ -1,6 +1,7 @@
 {% extends 'base_admin_user.html' %}
 
 {% block content %}
+  {% include 'message.html' %}
   <div class="ui segment">
     <h2 class="ui center aligned header">New User</h2>
     <form class="ui form" method="post" action="{% url 'blogs:create_user' %}">

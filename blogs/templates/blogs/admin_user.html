@@ -2,16 +2,11 @@
 
 {% block content %}
   <div class="row">
+    {% include 'message.html' %}
     <div class="ui basic clearing segment">
       <a class="ui right floated primary button" href="{% url 'blogs:create_user' %}">
         Create
       </a>
-      {% if message_class %}
-        <div class="ui {{ message_class }} compact message">
-          <div class="header">Action made</div>
-          <p>User registered successfully.</p>
-        </div>
-      {% endif %}
     </div>
   </div>
   <div class="row">
@@ -40,27 +35,27 @@
             </td>
           </tr>
         {% endfor %}
-        <div class="ui basic modal">
-          <div class="ui icon header">
-            <i class="archive icon"></i>
-            Delete User
-          </div>
-          <div class="content">
-            <p>
-              Are you sure you want to unregister this user from the blog?
-            </p>
-          </div>
-          <div class="actions">
-            <div class="ui basic cancel inverted button">
-              <i class="remove icon"></i>
-              I changed my mind
-            </div>
-            <div class="ui red ok inverted button">
-              <i class="checkmark icon"></i>
-              Go ahead and delete
-            </div>
-          </div>
-        </div>
+        {#        <div class="ui basic modal">#}
+        {#          <div class="ui icon header">#}
+        {#            <i class="archive icon"></i>#}
+        {#            Delete User#}
+        {#          </div>#}
+        {#          <div class="content">#}
+        {#            <p>#}
+        {#              Are you sure you want to unregister this user from the blog?#}
+        {#            </p>#}
+        {#          </div>#}
+        {#          <div class="actions">#}
+        {#            <div class="ui basic cancel inverted button">#}
+        {#              <i class="remove icon"></i>#}
+        {#              I changed my mind#}
+        {#            </div>#}
+        {#            <div class="ui red ok inverted button">#}
+        {#              <i class="checkmark icon"></i>#}
+        {#              Go ahead and delete#}
+        {#            </div>#}
+        {#          </div>#}
+        {#        </div>#}
         </tbody>
       </table>
       <div class="ui divider"></div>

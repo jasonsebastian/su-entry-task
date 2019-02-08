@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
@@ -7,7 +8,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 
-from .forms import BlogUserLoginForm, CommentForm, CreateEditPostForm, BlogUserCreationForm
+from .forms import BlogUserLoginForm, CommentForm, CreatePostForm, EditPostForm, BlogUserCreationForm
 from .models import BlogUser, Comment, Post
 
 
@@ -23,12 +24,18 @@ def index(request):
 
 def bu_login(request):
     if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
-        user = authenticate(username=username, password=password)
+        form = BlogUserLoginForm(request.POST)
+        if form.is_valid():
+            username = request.POST['username']
+            password = request.POST['password']
+            user = authenticate(username=username, password=password)
 
-        if user is not None:
-            login(request, user)
+            if user is not None:
+                login(request, user)
+                messages.add_message(request, messages.SUCCESS, "Welcome back, {}!".format(user.first_name))
+                return HttpResponseRedirect('/blogs/')
+
+        messages.add_message(request, messages.ERROR, "Incorrect username or password.")
 
     return HttpResponseRedirect('/blogs/')
 
@@ -56,7 +63,7 @@ def unlike(request, post_id):
     return HttpResponseRedirect(request.GET.get('next', '/'))
 
 
-def comment(request, post_id):
+def post_detail(request, post_id):
     post = get_object_or_404(Post, post_id=post_id)
     comments = post.comment_set.all().filter(is_hidden=False)
 
@@ -71,17 +78,25 @@ def comment(request, post_id):
     else:
         context['user_form'] = BlogUserLoginForm()
 
-    return render(request, 'blogs/comments.html', context)
+    return render(request, 'blogs/post_details.html', context)
 
 
-def add_comment(request, post_id):
+def comment(request, post_id):
     if request.method == 'POST':
-        user = get_object_or_404(BlogUser, user=request.user)
-        post = get_object_or_404(Post, post_id=post_id)
-        comment_content = request.POST['comment_content']
-        c = Comment(user=user, post=post, comment_content=comment_content)
-        c.save()
-        return HttpResponseRedirect('/blogs/')
+        form = CommentForm(request.POST)
+
+        if form.is_valid():
+            user = get_object_or_404(BlogUser, user=request.user)
+            post = get_object_or_404(Post, post_id=post_id)
+            comment_content = request.POST['comment_content']
+            c = Comment(user=user, post=post, comment_content=comment_content)
+            c.save()
+            messages.add_message(request, messages.SUCCESS, "You have successfully commented on this post!")
+        else:
+            messages.add_message(request, messages.ERROR,
+                                 "Oops, it looks like your comment is invalid. Please try again!")
+
+        return HttpResponseRedirect(reverse('blogs:post_detail', args=[post_id]))
 
 
 def search(request):
@@ -129,17 +144,10 @@ def admin_login(request):
 def admin_posts(request):
     post_list = Post.objects.all()
     paginator = Paginator(post_list, 5)
-
-    context = {}
-    if 'HTTP_REFERER' in request.META.keys():
-        if 'blogs/admin/post/edit' in request.META['HTTP_REFERER']:
-            context['message_class'] = 'positive'
-        elif 'blogs/admin/post/delete' in request.META['HTTP_REFERER']:
-            context['message_class'] = 'negative'
-
     page = request.GET.get('page')
-    context['posts'] = paginator.get_page(page)
-    return render(request, 'blogs/admin_posts.html', context)
+    return render(request, 'blogs/admin_posts.html', {
+        'posts': paginator.get_page(page)
+    })
 
 
 @staff_member_required(login_url='blogs:admin_login')
@@ -181,28 +189,45 @@ def show_comment(request, comment_id):
 @staff_member_required(login_url='blogs:admin_login')
 def create_post(request):
     if request.method == 'POST':
-        post_title = request.POST['post_title']
-        post_content = request.POST['post_content']
-        p = Post(post_title=post_title, post_content=post_content)
-        p.save()
-        return HttpResponseRedirect('/blogs/admin/posts/')
+        form = CreatePostForm(request.POST)
+        if form.is_valid():
+            post_title = request.POST['post_title']
+            post_content = request.POST['post_content']
+            p = Post(post_title=post_title, post_content=post_content)
+            p.save()
+            messages.add_message(request, messages.SUCCESS, "You have succesfully created a post!")
+            return HttpResponseRedirect('/blogs/admin/posts/')
+        else:
+            messages.add_message(request, messages.ERROR, "Invalid post title and post content.")
 
     return render(request, 'blogs/admin_create_post.html', {
-        'create_post_form': CreateEditPostForm()
+        'create_post_form': CreatePostForm()
     })
 
 
 @staff_member_required(login_url='blogs:admin_login')
 def edit_post(request, post_id):
     if request.method == 'POST':
-        p = get_object_or_404(Post, pk=post_id)
-        p.post_title = request.POST['post_title']
-        p.post_content = request.POST['post_content']
-        p.save()
-        return HttpResponseRedirect('/blogs/admin/posts')
+        form = EditPostForm(request.POST)
+        if form.is_valid():
+            p = get_object_or_404(Post, pk=post_id)
+            p.post_title = request.POST['post_title']
+            p.post_content = request.POST['post_content']
+            p.save()
+            messages.add_message(request, messages.SUCCESS, "You have succesfully edited a post!")
+            return HttpResponseRedirect('/blogs/admin/posts')
+
+        else:
+            print(form.errors)
+            messages.add_message(request, messages.ERROR, "Invalid post title and post content.")
+
+    post = get_object_or_404(Post, pk=post_id)
 
     return render(request, 'blogs/admin_edit_post.html', {
-        'edit_post_form': CreateEditPostForm()
+        'edit_post_form': EditPostForm(initial={
+            'post_title': post.post_title,
+            'post_content': post.post_content,
+        })
     })
 
 
@@ -219,13 +244,10 @@ def admin_user(request):
     user_list = BlogUser.objects.all()
     paginator = Paginator(user_list, 5)
 
-    context = {}
-    if 'HTTP_REFERER' in request.META.keys() and 'blogs/admin/user/create' in request.META['HTTP_REFERER']:
-        context['message_class'] = 'positive'
-
     page = request.GET.get('page')
-    context['users'] = paginator.get_page(page)
-    return render(request, 'blogs/admin_user.html', context)
+    return render(request, 'blogs/admin_user.html', {
+        'users': paginator.get_page(page)
+    })
 
 
 @staff_member_required(login_url='blogs:admin_login')
@@ -237,18 +259,23 @@ def admin_user_detail(request, username):
 
 @staff_member_required(login_url='blogs:admin_login')
 def create_user(request):
-    if request.method == 'POST' and request.POST['password'] == request.POST['password_confirmation']:
-        user = User.objects.create_user(
-            request.POST['username'],
-            password=request.POST['password'],
-            first_name=request.POST['first_name'],
-            last_name=request.POST['last_name'],
-        )
-        user.save()
+    if request.method == 'POST':
+        form = BlogUserCreationForm(request.POST)
+        if form.is_valid():
+            user = User.objects.create_user(
+                request.POST['username'],
+                password=request.POST['password'],
+                first_name=request.POST['first_name'],
+                last_name=request.POST['last_name'],
+            )
+            user.save()
 
-        bu = BlogUser(user=user, matric_no=request.POST['matric_no'])
-        bu.save()
-        return HttpResponseRedirect('/blogs/admin/user/')
+            bu = BlogUser(user=user, matric_no=request.POST['matric_no'])
+            bu.save()
+            messages.add_message(request, messages.SUCCESS, "You have successfully registered a user!")
+            return HttpResponseRedirect('/blogs/admin/user/')
+        else:
+            messages.add_message(request, messages.ERROR, "Invalid entries.")
 
     return render(request, 'blogs/admin_create_user.html', {
         'create_user_form': BlogUserCreationForm()

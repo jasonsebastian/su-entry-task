@@ -1,0 +1,21 @@
+{% if messages %}
+  {% for message in messages %}
+    <div class="ui {% if message.tags %}{{ message.tags }}{% endif %} message">
+    <i class="close icon"></i>
+    {% if message.tags %}
+      <div class="header">
+        {{ message.tags|title }}
+      </div>
+    {% endif %}
+    <p>{{ message }}</p>
+  {% endfor %}
+</div>
+{% endif %}
+
+{% block script %}
+  <script>
+      $('.message .close').on('click', function () {
+          $(this).closest('.message').transition('fade');
+      });
+  </script>
+{% endblock %}

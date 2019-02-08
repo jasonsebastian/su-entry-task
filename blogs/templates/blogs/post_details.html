@@ -14,8 +14,9 @@
 {% endblock %}
 
 {% block comments %}
+  {% include 'message.html' %}
   <div class="ui basic clearing segment">
-    <form class="ui form" method="post" action="{% url 'blogs:add_comment' post.post_id %}">
+    <form class="ui form" method="post" action="{% url 'blogs:comment' post.post_id %}">
       {% csrf_token %}
       <div class="field">
         <label>Comments</label>
