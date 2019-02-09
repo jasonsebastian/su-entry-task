@@ -5,8 +5,7 @@ from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.db.models import Count, Q
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404, render
-from django.urls import reverse
+from django.shortcuts import get_object_or_404, render, redirect
 
 from .forms import BlogUserLoginForm, CommentForm, CreatePostForm, EditPostForm, BlogUserCreationForm
 from .models import BlogUser, Comment, Post
@@ -38,16 +37,16 @@ def bu_login(request):
             if user is not None:
                 login(request, user)
                 messages.add_message(request, messages.SUCCESS, "Welcome back, {}!".format(user.first_name))
-                return HttpResponseRedirect('/blogs/')
+                return redirect('blogs:index')
 
         messages.add_message(request, messages.ERROR, "Incorrect username or password.")
 
-    return HttpResponseRedirect('/blogs/')
+    return redirect('blogs:index')
 
 
 def bu_logout(request):
     logout(request)
-    return HttpResponseRedirect('/blogs/')
+    return redirect('blogs:index')
 
 
 def like(request, post_id):
@@ -101,7 +100,7 @@ def comment(request, post_id):
             messages.add_message(request, messages.ERROR,
                                  "Oops, it looks like your comment is invalid. Please try again!")
 
-        return HttpResponseRedirect(reverse('blogs:post_detail', args=[post_id]))
+        return redirect('blogs:post_detail', post_id)
 
 
 def search(request):
@@ -125,12 +124,12 @@ def search(request):
 
 @staff_member_required(login_url='blogs:admin_login')
 def admin(request):
-    return HttpResponseRedirect('/blogs/admin/posts')
+    return redirect('blogs:admin_posts')
 
 
 def admin_login(request):
     if request.user.is_authenticated and request.user.is_staff:
-        return HttpResponseRedirect('/blogs/admin')
+        return redirect('blogs:admin')
 
     if request.method == 'POST':
         username = request.POST['username']
@@ -140,7 +139,7 @@ def admin_login(request):
         if user is not None and user.is_staff:
             login(request, user)
 
-        return HttpResponseRedirect('/blogs/admin/')
+        return redirect('blogs:admin')
 
     return render(request, 'blogs/admin_login.html')
 
@@ -170,9 +169,9 @@ def hide_comment(request, comment_id):
         c.save()
 
     if 'blogs/admin/post/' in request.META['HTTP_REFERER']:
-        return HttpResponseRedirect(reverse('blogs:admin_post_detail', args=[c.post.post_id]))
+        return redirect('blogs:admin_post_detail', post_id=c.post.post_id)
     elif 'blogs/admin/user/' in request.META['HTTP_REFERER']:
-        return HttpResponseRedirect(reverse('blogs:admin_user_detail', args=[c.user.user.username]))
+        return redirect('blogs:admin_user_detail', username=c.user.user.username)
 
 
 @staff_member_required(login_url='blogs:admin_login')
@@ -184,11 +183,11 @@ def show_comment(request, comment_id):
         c.save()
 
     if 'blogs/admin/post/' in request.META['HTTP_REFERER']:
-        return HttpResponseRedirect(reverse('blogs:admin_post_detail', args=[c.post.post_id]))
+        return redirect('blogs:admin_post_detail', post_id=c.post.post_id)
     elif 'blogs/admin/user/' in request.META['HTTP_REFERER']:
-        return HttpResponseRedirect(reverse('blogs:admin_user_detail', args=[c.user.user.username]))
+        return redirect('blogs:admin_user_detail', username=c.user.user.username)
 
-    return HttpResponseRedirect(reverse('blogs:admin_post_detail', args=[c.post.post_id]))
+    return redirect('blogs:admin_post_detail', c.post.post_id)
 
 
 @staff_member_required(login_url='blogs:admin_login')
@@ -201,7 +200,7 @@ def create_post(request):
             p = Post(post_title=post_title, post_content=post_content)
             p.save()
             messages.add_message(request, messages.SUCCESS, "You have succesfully created a post!")
-            return HttpResponseRedirect('/blogs/admin/posts/')
+            return redirect('blogs:admin_posts')
         else:
             messages.add_message(request, messages.ERROR, "Invalid post title and post content.")
 
@@ -220,7 +219,7 @@ def edit_post(request, post_id):
             p.post_content = request.POST['post_content']
             p.save()
             messages.add_message(request, messages.SUCCESS, "You have succesfully edited a post!")
-            return HttpResponseRedirect('/blogs/admin/posts')
+            return redirect('blogs:admin_posts')
 
         else:
             print(form.errors)
@@ -241,7 +240,7 @@ def delete_post(request, post_id):
     if request.method == 'POST':
         get_object_or_404(Post, pk=post_id).delete()
 
-    return HttpResponseRedirect('/blogs/admin/posts')
+    return redirect('blogs:admin_posts')
 
 
 @staff_member_required(login_url='blogs:admin_login')
@@ -278,7 +277,7 @@ def create_user(request):
             bu = BlogUser(user=user, matric_no=request.POST['matric_no'])
             bu.save()
             messages.add_message(request, messages.SUCCESS, "You have successfully registered a user!")
-            return HttpResponseRedirect('/blogs/admin/user/')
+            return redirect('blogs:admin_user')
         else:
             messages.add_message(request, messages.ERROR, "Invalid entries.")
 

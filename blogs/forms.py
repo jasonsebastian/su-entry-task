@@ -1,4 +1,5 @@
 from django import forms
+from django.utils.translation import gettext_lazy as _
 
 from .models import Post
 
@@ -49,4 +50,4 @@ class BlogUserCreationForm(forms.Form):
 
         if password and password_confirmation:
             if password != password_confirmation:
-                raise forms.ValidationError("Please re-enter your password and password confirmation.")
+                raise forms.ValidationError(_("Please re-enter your password and password confirmation."))
