@@ -4,7 +4,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.db.models import Count, Q
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render, redirect
 
 from .forms import BlogUserLoginForm, CommentForm, CreatePostForm, EditPostForm, BlogUserCreationForm
@@ -68,6 +68,20 @@ def unlike(request, post_id):
 
 
 def post_detail(request, post_id):
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+
+        if form.is_valid():
+            user = get_object_or_404(BlogUser, user=request.user)
+            post = get_object_or_404(Post, post_id=post_id)
+            comment_content = request.POST['comment_content']
+            c = Comment(user=user, post=post, comment_content=comment_content)
+            c.save()
+            messages.add_message(request, messages.SUCCESS, "You have successfully commented on this post!")
+        else:
+            messages.add_message(request, messages.ERROR,
+                                 "Oops, it looks like your comment is invalid. Please try again!")
+
     post = get_object_or_404(Post, post_id=post_id)
     comments = post.comment_set.all().filter(is_hidden=False)
 
@@ -83,24 +97,6 @@ def post_detail(request, post_id):
         context['user_form'] = BlogUserLoginForm()
 
     return render(request, 'blogs/post_details.html', context)
-
-
-def comment(request, post_id):
-    if request.method == 'POST':
-        form = CommentForm(request.POST)
-
-        if form.is_valid():
-            user = get_object_or_404(BlogUser, user=request.user)
-            post = get_object_or_404(Post, post_id=post_id)
-            comment_content = request.POST['comment_content']
-            c = Comment(user=user, post=post, comment_content=comment_content)
-            c.save()
-            messages.add_message(request, messages.SUCCESS, "You have successfully commented on this post!")
-        else:
-            messages.add_message(request, messages.ERROR,
-                                 "Oops, it looks like your comment is invalid. Please try again!")
-
-        return redirect('blogs:post_detail', post_id)
 
 
 def search(request):

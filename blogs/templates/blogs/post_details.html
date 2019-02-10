@@ -16,7 +16,7 @@
 {% block comments %}
   {% include 'message.html' %}
   <div class="ui basic clearing segment">
-    <form class="ui form" method="post" action="{% url 'blogs:comment' post.post_id %}">
+    <form class="ui form" method="post" action="{% url 'blogs:post_detail' post.post_id %}">
       {% csrf_token %}
       <div class="field">
         <label>Comments</label>
@@ -30,7 +30,7 @@
     </form>
   </div>
   <div class="ui feed">
-    {% for comment in comments %}
+    {% for comment in visible_comments %}
       <div class="event">
         <div class="label">
           {% load static %}
